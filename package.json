@@ -1,0 +1,24 @@
+{
+  "name": "loyalter-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JPLoyalter/loyalter-api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JPLoyalter/loyalter-api/issues"
+  },
+  "homepage": "https://github.com/JPLoyalter/loyalter-api#readme",
+  "dependencies": {
+    "lodash": "^4.17.15",
+    "restify": "^8.5.0",
+    "twilio": "^3.38.0"
+  }
+}
