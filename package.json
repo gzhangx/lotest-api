@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/JPLoyalter/loyalter-api#readme",
   "dependencies": {
+    "bluebird": "^3.7.2",
     "lodash": "^4.17.15",
+    "mongodb": "^3.3.5",
     "restify": "^8.5.0",
     "twilio": "^3.38.0"
   }
