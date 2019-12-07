@@ -1,7 +1,6 @@
 const twilio = require('twilio');
 function sendSMS(req, res) {
-    const accountSid = '1';
-  const authToken = '1';
+    const {accountSid, authToken} = require('../../conf.json');
   const client = require('twilio')(accountSid, authToken);
   client.messages
     .create({
