@@ -7,8 +7,8 @@ const server = restify.createServer();
 server.use(restify.plugins.bodyParser());
 server.use(restify.plugins.authorizationParser());
 server.use((req, res, next)=>{
-    queries.createQuery('users', {username: req.username}).then(res=>{        
-        if (!res || res.password !== req.authorization.basic.password) {
+    queries.createQuery('users', {username: req.username}).then(found=>{        
+        if (!found || found.password !== req.authorization.basic.password) {
             res.send(401, 'Unauthorized');
             return next(false);
         }

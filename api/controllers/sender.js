@@ -2,11 +2,18 @@ const twilio = require('twilio');
 function sendSMS(req, res) {
   const {accountSid, authToken} = require('../../conf.json').twilio;
   const client = require('twilio')(accountSid, authToken);
+  const {message, from, to} = req.body;
+  if (!message || !from || !to) {
+    return res.json({
+      error:'Must specify message, from or to',
+    })
+  }
+  
   client.messages
     .create({
-      body: 'This is a test for Luminous Nail Spa 3',
-      from: '+12162848800',
-      to: '+16786093557'
+      body: message,
+      from,
+      to
     })
     .then(message => {
         console.log(message.sid)
