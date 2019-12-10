@@ -10,8 +10,7 @@ function doDbOper(cfg, op) {
         }, async function(err, client) {
             if (err) return reject(err);
             try {
-                await op(client);
-                resolve();
+                resolve(await op(client));
             } catch(err) {
                 reject(err);            
             } finally {
