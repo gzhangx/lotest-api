@@ -18,9 +18,13 @@
   "homepage": "https://github.com/JPLoyalter/loyalter-api#readme",
   "dependencies": {
     "bluebird": "^3.7.2",
+    "cookie-session": "^1.3.3",
     "lodash": "^4.17.15",
     "mongodb": "^3.3.5",
+    "passport-local": "^1.0.0",
+    "passport-restify": "^1.0.1",
     "restify": "^8.5.0",
+    "restify-cookies": "^0.2.6",
     "twilio": "^3.38.0"
   }
 }
