@@ -65,11 +65,11 @@ function initPassport(server) {
     }));
     
     server.use(passport.initialize());
-    //server.use(passport.session());
+    server.use(passport.session());
 
     server.post('/login', 
         passport.authenticate('local', { failureRedirect: '/login' }),
-        function(req, res) {
+        function(req, res) {            
             res.redirect('/', (a1,a2)=>{
                 console.log(a1);
                 console.log(a2);
