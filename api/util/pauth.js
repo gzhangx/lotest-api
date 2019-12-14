@@ -2,10 +2,12 @@
 const session = require('cookie-session');
 const passport = require('passport-restify');
 const LocalStrategy = require('passport-local').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
+
 const CookieParser = require('restify-cookies');
 
 const queries = require('./queries');
-
+const conf = require('../../conf.json');
 
 passport.use(new LocalStrategy(
     function(username, password, done) {
@@ -67,14 +69,29 @@ function initPassport(server) {
     server.use(passport.initialize());
     server.use(passport.session());
 
+    const loginRedirectRoot = '/';
+    const loginRedFunc = (req, res)=>{
+        res.redirect(loginRedirectRoot, ()=>{});
+    };
     server.post('/login', 
         passport.authenticate('local', { failureRedirect: '/login' }),
-        function(req, res) {            
-            res.redirect('/', (a1,a2)=>{
-                console.log(a1);
-                console.log(a2);
-            });
+        loginRedFunc);
+
+
+    passport.use(new FacebookStrategy(conf.facebook,
+        function(accessToken, refreshToken, profile, cb) {
+        User.findOrCreate({ facebookId: profile.id }, function (err, user) {
+            return cb(err, user);
         });
+        }
+    ));
+
+    server.get('/auth/facebook', passport.authenticate('facebook'));
+      
+    server.get('/auth/facebook/callback',
+        passport.authenticate('facebook', { failureRedirect: '/login' }),
+        loginRedFunc);
+
 }
 
 module.exports = {
