@@ -4,12 +4,13 @@ const route = require('./api/route/route');
 const patuh = require('./api/util/pauth');
 const fs = require('fs');
 
-const HTTPS = true;
+const HTTPS = false;
 const serverHttpsOpt = {
     key: fs.readFileSync('./key.pem'),
     certificate: fs.readFileSync('./server.crt')
 };
 const server = restify.createServer(HTTPS?serverHttpsOpt:null);
+server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 server.use(restify.plugins.authorizationParser());
 server.use(restify.plugins.requestLogger());

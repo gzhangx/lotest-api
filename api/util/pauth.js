@@ -1,4 +1,4 @@
-
+const get = require('lodash/get');
 const session = require('cookie-session');
 const passport = require('passport-restify');
 const LocalStrategy = require('passport-local').Strategy;
@@ -78,20 +78,50 @@ function initPassport(server) {
         loginRedFunc);
 
 
-    passport.use(new FacebookStrategy(conf.facebook,
+    passport.use(new FacebookStrategy(Object.assign({},conf.facebook,{profileFields: ['id', 'emails', 'name']}),
         function(accessToken, refreshToken, profile, cb) {
-        User.findOrCreate({ facebookId: profile.id }, function (err, user) {
-            return cb(err, user);
-        });
+            const userData = {
+                idOnProvider: profile.id,
+                last_name: get(profile,'name.familyName'),
+                first_name: get(profile,'name.givenName'),
+                email: get(profile,'emails[0].value'),
+                provider: profile.provider,
+            };
+            return queries.createQuery('users', {email: userData.email}).then(found=>{                        
+                if (found) {
+                    return cb(null, found);
+                }else {
+                    return queries.cmdInsert("users", userData).then(()=>{
+                        cb(null, userData);
+                    });
+                }
+            }).catch(err=> {
+                console.log('facebook auth error');
+                console.log(err);
+                return cb(err); 
+            })           
         }
     ));
 
+    server.use((req, res, next)=>{
+        console.log(req.url);        
+        return next();        
+    }); 
     server.get('/auth/facebook', passport.authenticate('facebook'));
       
     server.get('/auth/facebook/callback',
         passport.authenticate('facebook', { failureRedirect: '/login' }),
-        loginRedFunc);
+        (req, res)=>{
+            res.redirect(loginRedirectRoot, ()=>{});
+        });
 
+    server.use((req, res, next)=>{
+        if (!req.user) {
+            res.send(401, 'Unauthorized');
+            return next(false);
+        }
+        return next(); 
+    }); 
 }
 
 module.exports = {
