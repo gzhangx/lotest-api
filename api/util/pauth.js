@@ -144,8 +144,11 @@ function initPassport(server) {
     server.get('/auth/facebook/callback',
         passport.authenticate('facebook', { failureRedirect: '/login' }),
         (req, res)=>{
-            res.end(fs.readFileSync("./build/index.html"));
-            //res.redirect(conf.ui.root, ()=>{});
+            try {
+                res.end(fs.readFileSync("./build/index.html"));
+            } catch (err) {
+                res.redirect(conf.ui.root, ()=>{});
+            }
             //res.end(JSON.stringify({
             //  user: pick(req.user,['email','id']),  
             //  cookie: req.cookies[`${req.sessionKey}`],
