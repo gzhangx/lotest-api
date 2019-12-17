@@ -3,7 +3,7 @@ const restify = require('restify');
 const route = require('./api/route/route');
 const fs = require('fs');
 
-const HTTPS = true;
+const HTTPS = process.env.PORT?false:true;
 const serverHttpsOpt = {
     key: fs.readFileSync('./key.pem'),
     certificate: fs.readFileSync('./server.crt')
@@ -18,5 +18,5 @@ route.route(server);
 
 const port = process.env.PORT || (HTTPS?443:8080);
 server.listen(port, function() {
-  console.log('%s listening at %s', server.name, server.url);
+  console.log('%s listening at %s HTTPS:${HTTPS}', server.name, server.url);
 });
