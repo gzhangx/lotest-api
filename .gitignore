@@ -1,3 +1,4 @@
 node_modules
 .vscode
 conf.json
+build

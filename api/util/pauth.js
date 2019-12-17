@@ -126,7 +126,7 @@ function initPassport(server) {
     server.get('/auth/facebook/callback',
         passport.authenticate('facebook', { failureRedirect: '/login' }),
         (req, res)=>{
-            res.redirect(loginRedirectRoot, ()=>{});
+            res.redirect(conf.ui.root, ()=>{});
             //res.end(JSON.stringify({
             //  user: pick(req.user,['email','id']),  
             //  cookie: req.cookies[`${req.sessionKey}`],

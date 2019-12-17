@@ -2,6 +2,7 @@ const keys = require('lodash/keys');
 
 const routes = require('./routes').routes;
 const patuh = require('../util/pauth');
+const restify = require('restify');
 
 module.exports = {
     route: server=>{
@@ -22,5 +23,10 @@ module.exports = {
             }
             return next(); 
         }); 
+
+        server.get('/*', restify.plugins.serveStatic({
+            directory: `${__dirname}/../../build`,
+            default: 'index.html'
+          }))
     }
 };

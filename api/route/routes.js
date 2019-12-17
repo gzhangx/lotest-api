@@ -7,7 +7,7 @@ const routes = {
         method: 'post',
         func: sender.sendSMS,
     },
-    '/': {
+    '/version': {
         method: 'get',
         func: about.version,
     },
