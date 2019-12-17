@@ -1,4 +1,5 @@
 const get = require('lodash/get');
+const pick = require('lodash/pick');
 const session = require('cookie-session');
 const passport = require('passport-restify');
 const LocalStrategy = require('passport-local').Strategy;
@@ -113,7 +114,12 @@ function initPassport(server) {
     server.get('/auth/facebook/callback',
         passport.authenticate('facebook', { failureRedirect: '/login' }),
         (req, res)=>{
-            res.redirect(loginRedirectRoot, ()=>{});
+            //res.redirect(loginRedirectRoot, ()=>{});
+            res.end(JSON.stringify({
+              user: pick(req.user,['email','id']),  
+              cookie: req.cookies[`${req.sessionKey}`],
+              cookieKey: req.cookies[`${req.sessionKey}.sig`],
+            }));
         });
     
 }
