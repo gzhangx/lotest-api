@@ -87,6 +87,7 @@ function initPassport(server) {
                 email: get(profile,'emails[0].value'),
                 provider: profile.provider,
             };
+            console.log(`facebook login ${userData.email}`);
             return queries.createQuery('users', {email: userData.email}).then(found=>{                        
                 if (found) {
                     return cb(null, found);
@@ -114,14 +115,7 @@ function initPassport(server) {
         (req, res)=>{
             res.redirect(loginRedirectRoot, ()=>{});
         });
-
-    server.use((req, res, next)=>{
-        if (!req.user) {
-            res.send(401, 'Unauthorized');
-            return next(false);
-        }
-        return next(); 
-    }); 
+    
 }
 
 module.exports = {

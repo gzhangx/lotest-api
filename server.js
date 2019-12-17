@@ -1,10 +1,9 @@
 
 const restify = require('restify');
 const route = require('./api/route/route');
-const patuh = require('./api/util/pauth');
 const fs = require('fs');
 
-const HTTPS = false;
+const HTTPS = true;
 const serverHttpsOpt = {
     key: fs.readFileSync('./key.pem'),
     certificate: fs.readFileSync('./server.crt')
@@ -16,8 +15,6 @@ server.use(restify.plugins.authorizationParser());
 server.use(restify.plugins.requestLogger());
 
 route.route(server);
-
-patuh.initPassport(server);
 
 const port = process.env.PORT || (HTTPS?443:8080);
 server.listen(port, function() {
