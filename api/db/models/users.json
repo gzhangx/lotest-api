@@ -1,5 +1,6 @@
 {
     "email": "String",
+    "username": "String",
     "uuid": "String",
     "id": "String"
 }

@@ -4,6 +4,7 @@ const session = require('cookie-session');
 const passport = require('passport-restify');
 const LocalStrategy = require('passport-local').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
+const uuid = require('uuid');
 
 const CookieParser = require('restify-cookies');
 
@@ -69,7 +70,8 @@ function initPassport(server) {
       
     server.use(CookieParser.parse);
     server.use(session({
-	    keys: ['key1xxx', 'key2xxxxx'],
+        keys: conf.sessionKeys || ['key1xxxx', 'key2xxxxx'],
+        name: 'egteam:sess',
 	    maxage: 48 * 3600 /*hours*/ * 1000,  /*in milliseconds*/
 	    secureProxy: false // if you do SSL outside of node
     }));
@@ -88,12 +90,15 @@ function initPassport(server) {
 
     passport.use(new FacebookStrategy(Object.assign({},conf.facebook,{profileFields: ['id', 'emails', 'name']}),
         function(accessToken, refreshToken, profile, cb) {
+            const email = get(profile,'emails[0].value');
             const userData = {
                 idOnProvider: profile.id,
                 last_name: get(profile,'name.familyName'),
                 first_name: get(profile,'name.givenName'),
-                email: get(profile,'emails[0].value'),
+                email,
+                username: email,
                 provider: profile.provider,
+                uuid: uuid.v1(),
             };
             console.log(`facebook login ${userData.email}`);
             return queries.findUser({email: userData.email}).then(found=>{                        
@@ -121,12 +126,12 @@ function initPassport(server) {
     server.get('/auth/facebook/callback',
         passport.authenticate('facebook', { failureRedirect: '/login' }),
         (req, res)=>{
-            //res.redirect(loginRedirectRoot, ()=>{});
-            res.end(JSON.stringify({
-              user: pick(req.user,['email','id']),  
-              cookie: req.cookies[`${req.sessionKey}`],
-              cookieKey: req.cookies[`${req.sessionKey}.sig`],
-            }));
+            res.redirect(loginRedirectRoot, ()=>{});
+            //res.end(JSON.stringify({
+            //  user: pick(req.user,['email','id']),  
+            //  cookie: req.cookies[`${req.sessionKey}`],
+            //  cookieKey: req.cookies[`${req.sessionKey}.sig`],
+            //}));
         });
     
 }
