@@ -12,7 +12,7 @@ const conf = require('../../conf.json');
 
 passport.use(new LocalStrategy(
     function(username, password, done) {
-        queries.createQuery('users', {username}).then(found=>{        
+        queries.findUser({username}).then(found=>{        
             if (!found || found.password !== password) {
                 return done(null, false); 
             }
@@ -30,7 +30,14 @@ passport.serializeUser(function(user, done) {
   });
   
   passport.deserializeUser(function(user, done) {
-    queries.createQuery('users', {uuid:user.uuid}).then(found=>{                
+    const cond = [];
+    if (user.uuid) {
+        cond.push({uuid:user.uuid});
+    }
+    if (user.email) {
+        cond.push({email:user.email});
+    }
+    queries.findUser({$or:cond}).then(found=>{                
         return done(null, found);         
     }).catch(err=> {
         console.log('auth error');
@@ -44,7 +51,7 @@ passport.serializeUser(function(user, done) {
 
 function oldAuth(server) {
 server.use((req, res, next)=>{
-    queries.createQuery('users', {username: req.username}).then(found=>{        
+    queries.findUser({username: req.username}).then(found=>{        
         if (!found || found.password !== req.authorization.basic.password) {
             res.send(401, 'Unauthorized');
             return next(false);
@@ -89,11 +96,11 @@ function initPassport(server) {
                 provider: profile.provider,
             };
             console.log(`facebook login ${userData.email}`);
-            return queries.createQuery('users', {email: userData.email}).then(found=>{                        
+            return queries.findUser({email: userData.email}).then(found=>{                        
                 if (found) {
                     return cb(null, found);
                 }else {
-                    return queries.cmdInsert("users", userData).then(()=>{
+                    return queries.cmdInsert("Users", userData).then(()=>{
                         cb(null, userData);
                     });
                 }

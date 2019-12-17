@@ -23,13 +23,13 @@ function sendSMS(req, res) {
     })
     .then(message => {
         console.log(message.sid);
-        return queries.cmdInsert("messagesSent", {
+        return queries.cmdInsert("MessagesSent", {
           user,
           time: new Date(),
           status: 'Sent',
           data: pick(message,['accountSid','apiVersion','body','dateCreated','dateUpdated','direction','from','price','priceUnit','sid','status','to','uri']),
         }).then(saved=>{
-          const sid = saved.insertedId.toString();
+          const sid = saved.id.toString();
           message.sid = sid;
           res.json(message);
         });        

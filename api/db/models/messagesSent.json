@@ -1,0 +1,16 @@
+{
+    "user":{
+        "email":"String"
+    },
+    "time":"Date",
+    "status":"String",
+    "data":{
+        "accountSid":"String",
+        "body":"String",
+        "from": "String",      
+        "sid": "String",
+        "status": "String",
+        "to": "String",
+        "uri": "String"
+    }
+}
