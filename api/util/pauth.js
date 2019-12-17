@@ -10,11 +10,19 @@ const CookieParser = require('restify-cookies');
 
 const queries = require('./queries');
 const conf = require('../../conf.json');
+const fs = require('fs');
 
+function hashPass(p) {
+    return p;
+}
+
+function validateUserPwd(user, pp) {
+    return user && hashPass(pp) === get(user,'_doc.password');
+}
 passport.use(new LocalStrategy(
     function(username, password, done) {
         queries.findUser({username}).then(found=>{        
-            if (!found || found.password !== password) {
+            if (!validateUserPwd(found, password)) {
                 return done(null, false); 
             }
             return done(null, found);
@@ -53,7 +61,7 @@ passport.serializeUser(function(user, done) {
 function oldAuth(server) {
 server.use((req, res, next)=>{
     queries.findUser({username: req.username}).then(found=>{        
-        if (!found || found.password !== req.authorization.basic.password) {
+        if (!validateUserPwd(found, req.authorization.basic.password)) {
             res.send(401, 'Unauthorized');
             return next(false);
         }
@@ -118,15 +126,26 @@ function initPassport(server) {
     ));
 
     server.use((req, res, next)=>{
-        console.log(req.url);        
-        return next();        
+        console.log(req.url);     
+        const username = get(req,'username');
+        const password = get(req,'authorization.basic.password');   
+        if (username && password) {
+            queries.findUser({username}).then(found=>{
+                if (validateUserPwd(found,password)) {
+                    req.user = found;
+                }
+                return next();   
+            });
+        }else
+            return next();        
     }); 
     server.get('/auth/facebook', passport.authenticate('facebook'));
       
     server.get('/auth/facebook/callback',
         passport.authenticate('facebook', { failureRedirect: '/login' }),
         (req, res)=>{
-            res.redirect(conf.ui.root, ()=>{});
+            res.end(fs.readFileSync("./build/index.html"));
+            //res.redirect(conf.ui.root, ()=>{});
             //res.end(JSON.stringify({
             //  user: pick(req.user,['email','id']),  
             //  cookie: req.cookies[`${req.sessionKey}`],
