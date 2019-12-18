@@ -16,7 +16,7 @@ module.exports = {
         server.use((req, res, next)=>{
             if (req.method !== 'GET' && req.method !== 'POST') return next();
             const controller = routes[req.url];
-            if (controller && controller.auth) {
+            if (controller && controller.auth !== false) {
                 if (!req.user) {
                     res.send(401, 'Unauthorized');
                     return next(false);

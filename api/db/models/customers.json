@@ -1,8 +1,11 @@
 {
     "email": "String",
-    "username": "String",
+    "phone": "String",    
     "uuid": "String",
-    "id": "String",
+    "user":{
+        "email":"String",
+        "uuid":"String"
+    },
     "firstName":"String",
     "lastName":"String"
 }

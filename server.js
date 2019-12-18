@@ -9,14 +9,19 @@ const serverHttpsOpt = {
     certificate: fs.readFileSync('./server.crt')
 };
 const server = restify.createServer(HTTPS?serverHttpsOpt:null);
-server.use(restify.plugins.queryParser());
-server.use(restify.plugins.bodyParser());
-server.use(restify.plugins.authorizationParser());
-server.use(restify.plugins.requestLogger());
 
-route.route(server);
+function serverInit(server) {
+  server.use(restify.plugins.queryParser());
+  server.use(restify.plugins.bodyParser({requestBodyOnGet: true}));
+  server.use(restify.plugins.authorizationParser());
+  server.use(restify.plugins.requestLogger());
+
+  route.route(server);
+}
+
+serverInit(server);
 
 const port = process.env.PORT || (HTTPS?443:8080);
 server.listen(port, function() {
-  console.log('%s listening at %s HTTPS:${HTTPS}', server.name, server.url);
+  console.log(`${server.name} listening at ${server.url} HTTPS:${HTTPS}`);
 });

@@ -13,8 +13,8 @@ const modelAry = modelFiles.map(fname=>{
   const collection = fname.replace('.json','');
   const name = startCase(collection).replace(' ','');
   const schema = JSON.parse(fs.readFileSync(`${modelDir}/${fname}`));
-  console.log(`${name} ${collection}`);
-  console.log(schema);
+  //console.log(`${name} ${collection}`);
+  //console.log(schema);
   return {
     name,
     model: mongoose.model(collection, new mongoose.Schema(schema, {collection}))
@@ -32,5 +32,5 @@ db.once('open', function() {
 
 //models.MessagesSent.find().then(res=>console.log(res));
 //models.Users.find().then(res=>console.log(res));
-new models.MessagesSent({test:"test"}).save()
+//new models.Customers({test:"test",firstName:"test"}).save()
 module.exports = models;

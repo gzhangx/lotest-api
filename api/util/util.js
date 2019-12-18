@@ -1,10 +1,15 @@
 const get = require('lodash/get');
 const pick = require('lodash/pick');
 
+function pickUserFields(user) {
+    return pick(user, ['_id','username','uuid','email','idOnProvider','provider']);
+}
+
 function getUser(req) {
-    return pick(get(req,'user'), ['_id','username','uuid','email','idOnProvider','provider']);
+    return pickUserFields(get(req,'user'));
 }
 
 module.exports = {
+    pickUserFields,
     getUser,
 };

@@ -1,6 +1,7 @@
 {
     "user":{
-        "email":"String"
+        "email":"String",
+        "uuid":"String"
     },
     "time":"Date",
     "status":"String",
