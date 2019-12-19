@@ -1,6 +1,7 @@
 //const mongo = require('../lib/mongo');
 //const cfg = require('../../conf').mongo;
 const get = require('lodash/get');
+const pick = require('lodash/pick');
 const models = require('../db/goose');
 const {pickUserFields} = require('./util');
 
@@ -26,7 +27,7 @@ function updateAuthSession(info) {
 }
 
 function getAuthSession({pub, sec}) {
-    return models.AuthSessions.find({pub, sec});
+    return models.AuthSessions.findOne({pub, sec}).then(r=>pick(r,['session','sessionSig']));
 }
 
 function cmdInsert(who, record) {
