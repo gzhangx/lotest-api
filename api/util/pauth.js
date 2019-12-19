@@ -12,6 +12,8 @@ const queries = require('./queries');
 const conf = require('../../conf.json');
 const fs = require('fs');
 
+const sessionName = 'egteam:sess';
+
 function hashPass(p) {
     return p;
 }
@@ -89,7 +91,7 @@ function initPassport(server) {
     server.use(CookieParser.parse);
     server.use(session({
         keys: conf.sessionKeys || ['key1xxxx', 'key2xxxxx'],
-        name: 'egteam:sess',
+        name: sessionName,
 	    maxage: 48 * 3600 /*hours*/ * 1000,  /*in milliseconds*/
 	    secureProxy: false // if you do SSL outside of node
     }));
@@ -112,6 +114,8 @@ function initPassport(server) {
     });
     server.post('/auth/getAuthSession', (req, res)=>{
         return queries.getAuthSession(req.body).then(r=>{
+            res.setCookie(sessionName, r.session);
+            res.setCookie(`${sessionName}.sig`, r.sessionSig);
             res.json(r);
         });
     });
