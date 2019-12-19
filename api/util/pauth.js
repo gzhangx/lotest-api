@@ -19,6 +19,16 @@ function hashPass(p) {
 function validateUserPwd(user, pp) {
     return user && hashPass(pp) === get(user,'_doc.password');
 }
+
+function FacebookReqStore(options) {
+    this.store = function(req, cb) {
+        cb(null,get(req,'query.state'));
+      };
+      this.verify = function(req, providedState, cb) {
+        cb(null, true);
+      };
+}
+
 passport.use(new LocalStrategy(
     function(username, password, done) {
         queries.findUser({username}).then(found=>{        
@@ -96,7 +106,10 @@ function initPassport(server) {
         loginRedFunc);
 
 
-    passport.use(new FacebookStrategy(Object.assign({},conf.facebook,{profileFields: ['id', 'emails', 'name']}),
+    passport.use(new FacebookStrategy(Object.assign({},conf.facebook,{
+        profileFields: ['id', 'emails', 'name'],
+        store: new FacebookReqStore(),
+    }),
         function(accessToken, refreshToken, profile, cb) {
             const email = get(profile,'emails[0].value');
             const userData = {
