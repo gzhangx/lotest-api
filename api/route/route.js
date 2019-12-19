@@ -13,7 +13,7 @@ module.exports = {
     route: server=>{
         server.opts("/*", function (req,res,next) {
             addCORS(req, res);
-            //res.send(200);
+            res.send(200);
             return next();
         });
         

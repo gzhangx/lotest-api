@@ -110,6 +110,11 @@ function initPassport(server) {
             res.json({id:r.id});
         });
     });
+    server.post('/auth/getAuthSession', (req, res)=>{
+        return queries.getAuthSession(req.body).then(r=>{
+            res.json(r);
+        });
+    });
 
     passport.use(new FacebookStrategy(Object.assign({},conf.facebook,{
         profileFields: ['id', 'emails', 'name'],
