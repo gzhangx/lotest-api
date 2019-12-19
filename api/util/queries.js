@@ -8,6 +8,27 @@ function findUser(ops) {
     return models.Users.findOne(ops);
 }
 
+function addAuthSession({sec, pub, provider}) {
+    const created = new Date();
+    return new models.AuthSessions({provider, sec, pub, created, modified: created}).save();
+}
+
+function updateAuthSession(info) {
+    return models.AuthSessions.findOne({pub: info.pub}).then(found=>{
+        if (!found) {
+            throw {
+                error:'Auth session not found'
+            }
+        }
+        Object.assign(found, info);
+        found.save();
+    });
+}
+
+function getAuthSession({pub, sec}) {
+    return models.AuthSessions.find({pub, sec});
+}
+
 function cmdInsert(who, record) {
     const newRec = new models[who](record);
     return newRec.save();
@@ -47,6 +68,9 @@ function pageCustomers(user, query, opt) {
 //createQuery('users', {username:'gzhang'}).then(r=>console.log(r));
 module.exports = {
     findUser,
+    addAuthSession,
+    updateAuthSession,
+    getAuthSession,
     cmdInsert,
     saveCustomer,
     pageCustomers,

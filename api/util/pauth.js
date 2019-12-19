@@ -105,6 +105,11 @@ function initPassport(server) {
         passport.authenticate('local', { failureRedirect: '/login' }),
         loginRedFunc);
 
+    server.post('/auth/addAuthSession', (req, res)=>{
+        return queries.addAuthSession(req.body).then(r=>{
+            res.json({id:r.id});
+        });
+    });
 
     passport.use(new FacebookStrategy(Object.assign({},conf.facebook,{
         profileFields: ['id', 'emails', 'name'],
@@ -157,6 +162,35 @@ function initPassport(server) {
     server.get('/auth/facebook/callback',
         passport.authenticate('facebook', { failureRedirect: '/login' }),
         (req, res)=>{
+            const state = get(req, 'query.state');
+            let error = 'Unknown Error';
+            const session = req.cookies[`${req.sessionKey}`];
+            const sessionSig = req.cookies[`${req.sessionKey}.sig`];
+            try {
+                if (state) {
+                    const stateStr = Buffer.from(state,'base64');
+                    const resJsp = JSON.parse(stateStr);
+                    if (resJsp.url) {
+                        return queries.updateAuthSession({
+                            pub: resJsp.pub,
+                            session,
+                            sessionSig,
+                            modified: new Date(),
+                        }).then(()=>{                        
+                            return res.redirect(resJsp.url,()=>{});
+                        });
+                    } else {
+                        error = 'Invalid url';
+                    }
+                }
+            } catch(err) {
+                console.log('error on facebook callback');
+                console.log(err);                
+            }
+            console.log(`Error on facebook redir ${error}`);
+            return res.json({
+                error
+            });
             try {
                 res.end(fs.readFileSync("./build/index.html"));
             } catch (err) {

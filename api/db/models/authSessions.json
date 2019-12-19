@@ -1,0 +1,9 @@
+{
+    "provider":"String",
+    "sec":"String",
+    "pub":"String",
+    "created":"Date",
+    "modified":"Date",
+    "session":"String",
+    "sessionSig":"String"
+}

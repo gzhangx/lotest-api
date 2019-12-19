@@ -33,4 +33,6 @@ db.once('open', function() {
 //models.MessagesSent.find().then(res=>console.log(res));
 //models.Users.find().then(res=>console.log(res));
 //new models.Customers({test:"test",firstName:"test"}).save()
+//new models.AuthSession({"sec":"test", "created":new Date()}).save();
+//models.AuthSession.find().then(res=>{console.log(res); res.forEach(r=>r.delete())});
 module.exports = models;
