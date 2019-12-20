@@ -22,11 +22,11 @@ function saveCustomer(req, res) {
 
 function loadCustomer(req, res) {
   const user = getUser(req);
-  const {search, sort = { created:-1}, limit=10, skip=0 } = req.body;  
+  const {search, sort = { created:-1}, limit=10, skip=0 } = req.query;  
 
   
   
-  return queries.pageCustomers(user, search, {limit, skip,sort}).then(rrr=>{
+  return queries.pageCustomers(user, search, {limit:parseInt(limit), skip:parseInt(skip),sort}).then(rrr=>{
        res.json(rrr);
   });
 }
