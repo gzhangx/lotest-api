@@ -4,6 +4,7 @@ const get = require('lodash/get');
 const pick = require('lodash/pick');
 const models = require('../db/goose');
 const {pickUserFields} = require('./util');
+const ObjectId = require('mongodb').ObjectId;
 
 function findUser(ops) {
     return models.Users.findOne(ops);
@@ -78,7 +79,7 @@ function saveCustomer(user, customer) {
 function deleteCustomer(user, id) {        
     return models.Customers.findOne({
         '$and':[
-            {id,},
+            {_id: ObjectId(id),},
             {'user.uuid':user.uuid}
         ]
     }).then(found=>{
