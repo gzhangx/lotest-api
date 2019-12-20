@@ -62,7 +62,7 @@ function saveCustomer(user, customer) {
 function pageCustomers(user, query, opt) {
     opt = stdPage(opt);
     return models.Customers.find(Object.assign({}, query, {
-        user:{uuid: user.uuid}
+        'user.uuid': user.uuid
     }), null, opt);
 }
 
