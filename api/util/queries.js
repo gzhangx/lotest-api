@@ -58,9 +58,13 @@ function saveCustomer(user, customer) {
         const _id = customer._id;
         return models.Customers.update({_id}, customer);
     }
+    const or = [];
+    if (customer.email) or.push({ email: customer.email});
+    if (customer.phone) or.push({ phone: customer.phone});
     return models.Customers.findOne({
         '$and':[
-            {'$or':[{ email: customer.email}, { phone: customer.phone}]},
+            { 'user.uuid':customer.user.uuid},
+            {'$or':or},
         ]
     }).then(found=>{
         if (found) {
