@@ -1,6 +1,7 @@
 {
     "email": "String",
     "phone": "String",    
+    "birthday": "Date",
     "uuid": "String",
     "user":{
         "email":"String",

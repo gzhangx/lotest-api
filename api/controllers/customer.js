@@ -14,9 +14,13 @@ function saveCustomer(req, res) {
   customer.created = new Date();
   
   return queries.saveCustomer(user, customer).then(rrr=>{
-       res.json({
-           id: rrr.id
-       });
+      const r = {
+          id: rrr.id
+      };
+      if (rrr.state) {
+        r.state = rrr.state;
+      }
+      res.json(r);
   });
 }
 

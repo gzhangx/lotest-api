@@ -57,7 +57,22 @@ function saveCustomer(user, customer) {
         const _id = customer._id;
         return models.Customers.update({_id}, customer);
     }
-    return new models.Customers(customer).save();
+    return models.Customers.findOne({
+        '$and':[
+            {'$or':[{ email: customer.email}, { phone: customer.phone}]},
+        ]
+    }).then(found=>{
+        if (found) {
+            ['email', 'phone', 'firstName', 'lastName','birthday'].forEach(name=>{
+                found[name] = customer[name] || found[name];    
+            })
+            found.save();
+            customer.state = 'Updated';
+            return customer;
+        }else {
+            return new models.Customers(customer).save();
+        }
+    })
 }
 function pageCustomers(user, query, opt) {
     opt = stdPage(opt);
