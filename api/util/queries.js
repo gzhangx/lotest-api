@@ -74,6 +74,22 @@ function saveCustomer(user, customer) {
         }
     })
 }
+
+function deleteCustomer(user, id) {        
+    return models.Customers.findOne({
+        '$and':[
+            {id,},
+            {'user.uuid':user.uuid}
+        ]
+    }).then(found=>{
+        if (found) {            
+            found.remove();
+        }else {
+            return {error:'not found'};
+        }
+    })
+}
+
 function pageCustomers(user, query, opt) {
     opt = stdPage(opt);
     return models.Customers.find(Object.assign({}, query, {
@@ -89,5 +105,6 @@ module.exports = {
     getAuthSession,
     cmdInsert,
     saveCustomer,
+    deleteCustomer,
     pageCustomers,
 }

@@ -35,8 +35,23 @@ function loadCustomer(req, res) {
   });
 }
 
+function deleteCustomer(req, res) {
+  const user = getUser(req);
+  const id = req.params.id;
+  if (!id) {
+    return res.json({
+      error:'Must specify customer',
+    })
+  }
+  
+  return queries.deleteCustomer(user, id).then(rrr=>{      
+      res.json(rrr);
+  });
+}
+
 module.exports = {   
     saveCustomer,
     loadCustomer,
+    deleteCustomer,
 };
 

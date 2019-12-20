@@ -11,6 +11,10 @@ const routes = {
         method: 'post',
         func: customer.saveCustomer,
     },
+    '/customer/:id' :{
+        method: 'del',
+        func: customer.deleteCustomer,
+    },
     '/loadCustomer' :{
         method: 'get',
         func: customer.loadCustomer,
