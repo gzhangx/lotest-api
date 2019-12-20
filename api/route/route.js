@@ -16,6 +16,14 @@ module.exports = {
             res.send(200);
             return next();
         });
+
+        server.use((req, res, next)=>{
+            const egcookie = req.headers['egcookie'];
+            if (egcookie) {
+                req.headers['cookie'] = egcookie;
+            }
+            return next(); 
+        }); 
         
         const rts = keys(routes);
         rts.forEach(url=>{
