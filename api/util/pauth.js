@@ -9,6 +9,7 @@ const uuid = require('uuid');
 const CookieParser = require('restify-cookies');
 
 const queries = require('./queries');
+const {pickUserFields} = require('./util');
 const conf = require('../../conf.json');
 const fs = require('fs');
 
@@ -105,7 +106,15 @@ function initPassport(server) {
     };
     server.post('/login', 
         passport.authenticate('local', { failureRedirect: '/login' }),
-        loginRedFunc);
+        (req, res)=>{
+            if (req.user) {
+                res.json(pickUserFields(req.user));
+            }else {
+                res.json({
+                    error:'not found'
+                })
+            }
+        });
 
     server.post('/auth/addAuthSession', (req, res)=>{
         return queries.addAuthSession(req.body).then(r=>{
