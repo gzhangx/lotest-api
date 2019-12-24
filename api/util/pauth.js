@@ -87,10 +87,14 @@ function initPassport(server) {
 
     passport.use(new LocalStrategy(
         function(username, password, done) {
+            console.log(`Local auth finding user ${username}`);
             queries.findUser({username}).then(found=>{        
+                console.log(`Local auth finding user ${username} found is ${found}`);
                 if (!validateUserPwd(found, password)) {
+                    console.log(`Local auth finding user ${username} invalid`);
                     return done(null, false); 
                 }
+                console.log(`Local auth finding user ${username} good`);
                 return done(null, found);
             }).catch(err=> {
                 console.log('auth error');
