@@ -105,7 +105,16 @@ function initPassport(server) {
         res.redirect(loginRedirectRoot, ()=>{});
     };
     server.post('/login', 
-        passport.authenticate('local', { failureRedirect: '/login' }),
+    (req, res,next)=>{
+        passport.authenticate('local', {  }, (err, user)=>{
+            if (err || !user) {
+                res.statusCode = 401;
+                return res.json({"error":"login failed"});
+            }else {
+                return req.login(user, {}, next);
+            }
+        })(req, res,next);
+    },
         (req, res)=>{
             if (req.user) {
                 res.setHeader('Content-Type', 'application/json');
