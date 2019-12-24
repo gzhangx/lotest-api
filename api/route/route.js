@@ -45,10 +45,10 @@ module.exports = {
             return next(); 
         }); 
 
-        server.get('/*', restify.plugins.serveStatic({
-            directory: `${__dirname}/../../build`,
-            default: 'index.html'
-          }));        
+        //server.get('/*', restify.plugins.serveStatic({
+        //    directory: `${__dirname}/../../build`,
+        //    default: 'index.html'
+        //  }));        
 
     }
 };
