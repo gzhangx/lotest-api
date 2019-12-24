@@ -5,7 +5,7 @@ const passport = require('passport-restify');
 const LocalStrategy = require('passport-local').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 const uuid = require('uuid');
-
+const cookie = require('cookie');
 const CookieParser = require('restify-cookies');
 
 const queries = require('./queries');
@@ -31,21 +31,6 @@ function FacebookReqStore(options) {
         cb(null, true);
       };
 }
-
-passport.use(new LocalStrategy(
-    function(username, password, done) {
-        queries.findUser({username}).then(found=>{        
-            if (!validateUserPwd(found, password)) {
-                return done(null, false); 
-            }
-            return done(null, found);
-        }).catch(err=> {
-            console.log('auth error');
-            console.log(err);
-            return next(err); 
-        })      
-    }
-  ));
 
 passport.serializeUser(function(user, done) {
     done(null, user);
@@ -100,6 +85,21 @@ function initPassport(server) {
     server.use(passport.initialize());
     server.use(passport.session());
 
+    passport.use(new LocalStrategy(
+        function(username, password, done) {
+            queries.findUser({username}).then(found=>{        
+                if (!validateUserPwd(found, password)) {
+                    return done(null, false); 
+                }
+                return done(null, found);
+            }).catch(err=> {
+                console.log('auth error');
+                console.log(err);
+                return next(err); 
+            })      
+        }
+      ));
+
     const loginRedirectRoot = '/';
     const loginRedFunc = (req, res)=>{
         res.redirect(loginRedirectRoot, ()=>{});
@@ -108,7 +108,26 @@ function initPassport(server) {
         passport.authenticate('local', { failureRedirect: '/login' }),
         (req, res)=>{
             if (req.user) {
-                res.json(pickUserFields(req.user));
+                res.setHeader('Content-Type', 'application/json');
+                res.writeHead(res.statusCode);
+                const setk = res.header('set-cookie') || [];
+                const usr = pickUserFields(req.user);
+                if (setk) {
+                    const parsed = setk.map(cookie.parse);
+                    parsed.reduce((acc,p)=>{
+                        const session = p[req.sessionKey];
+                        const sessionSig = p[`${req.sessionKey}.sig`];
+                        if (session) {
+                            return Object.assign(acc, {session});
+                        }
+                        if (sessionSig) {
+                            return Object.assign(acc, {sessionSig});
+                        }
+                        return acc;
+                    }, usr);
+                    console.log(parsed);
+                }
+                res.end(JSON.stringify(usr));
             }else {
                 res.json({
                     error:'not found'
